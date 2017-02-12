@@ -1,0 +1,111 @@
+---
+title: "Пузата Україна. Які регіони годують державу"
+author: "Roman Kyrychenko"
+date: "2/5/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+Sys.setlocale(,"Ru_ru")
+
+library(ggplot2)
+library(sp)
+library(rgdal)
+library(dplyr)
+library(scales)
+library(maptools)
+library(ggiraph)
+library(stringr)
+library(knitr)
+library(rmarkdown)
+library(readr)
+library(RColorBrewer)
+library(Rcartogram)
+library(getcartr)
+load("map_production.RData")
+```
+
+За останні роки все більша частка ВВП України забезпечується вирощенням аграрних культур. Особливо сильно ця тенденція посилилася на фоні втрати контролю над частиною індустріальних районів Донбасу, в яких видобувалися корисні копалини.
+
+У силу географічних, кліматичних особливостей вирощення сільськогосподарських культур в Україні нерівномірне. Дається в знаки також політика місцевої влади щодо їх вирощення, яка в умовах децентралізації відіграватиме в цьому ще більшу роль.
+
+Економічна правда вирішила продемонструвати, який вклад зробили регіони для того, щоб полиці крамниць були заповнені свіжими сильськогосподарськими продуктами, і врешті дати відповідь на хвилююче багатьох людей питання "які регіони годують Україну?"
+
+## Вирощення зернових
+
+Урожай зернових цього року був рекордним і становив 65951.5 тисяч тон. Це на 9.7% більше, ніж 2015 року і на 4.6%, ніж у докризовий 2013-тий. Варто зазначити, що урожайність зернових особливо часто падає через високу залежність від погодніх умов.
+Лідери у зборі зернових - Полтавська та Вінницька області. На їх території виростили 17% усіх зернових України за 2016 рік.Частка цих регіонів у вирощенні зернових з 2013 року суттєво не змінилася - це традиційні лідери цієї галузі. Отже, хліб, який ви їсте, з найбільшою ймовірністю ріс на території Полтавської області.
+
+```{r zerno, warning=FALSE,comment = NA, cache = F, echo=FALSE}
+gi <- ggplot(data=plot.data5[plot.data5$id!="м. Київ",]) + 
+  geom_polygon_interactive(aes(x = long, y = lat, group = group, fill = `Зернові та зернобобові культури  (у вазі після доробки)`,
+      tooltip = tip, data_id = id, use_jquery = TRUE), color="grey50", size=0.25) + 
+  scale_fill_gradient(low="white", high = "#fec44f", 
+                      name="Зернові, тис. т", guide = guide_legend(reverse = TRUE), 
+                      na.value = "white") + 
+  theme_void() + labs(caption="Дані: Держстат") + theme(legend.title = element_text(size = 6), text = element_text(size=6))
+ggiraph(code = {print(gi)}, hover_css = "stroke-width:2px;", width = 1,height_svg = 3)
+```
+
+## Вирощення овочів
+
+2016 рік у зборі овочевих культур не став рекордним, проте порівняно з 2015 роком було зібрано на 2.2% більший врожай. До показника 2013 року ще далеко - тоді врожай був на 4.6% більшим, ніж минулого року. Однак з усіх сільськогосподарських культур події 2014 року навбільше вплинули на загальний тонаж зібраних овочей. Станом на 2013 рік майже 5% зборів давав нині окупований Крим. 
+Одноосібним лідером у цій сфері сільського господарства є Херсонщина. Після окупації Криму її частка у вирощенні овочів зросла з 11.8% до 13.6%. Факт її лідерства вже давно широко використовується в рекламі продукції з помідорів.
+
+```{r ovochi, warning=FALSE,comment = NA, cache = F, echo=FALSE}
+gi <- ggplot(data=plot.data[plot.data$id!="м. Київ",]) + 
+  geom_polygon_interactive(aes(x = long, y = lat, group = group, fill = Овочі,
+      tooltip = tip, data_id = id, use_jquery = TRUE), color="grey50", size=0.25) + 
+  scale_fill_gradient(low="white", high = "#fc8d59", 
+                      name="Овочі, тис. т", guide = guide_legend(reverse = TRUE), 
+                      na.value = "white") + 
+  theme_void() + labs(caption="Дані: Держстат") + theme(legend.title = element_text(size = 6), text = element_text(size=6))
+ggiraph(code = {print(gi)}, hover_css = "stroke-width:2px;", width = 1,height_svg = 3)
+```
+
+## Вирощення картоплі
+
+Урожай картоплі цей рік був на 4.4% більшим, ніж минулого. Але при цьому на 2.3% меншим, ніж у 2013-му.
+Лідери з вирощення картоплі - Вінницька, Київська та Львівська області. У цих областей у 2016 році зібрано близько 23% української картоплі. Однак в Україні широко розповсюджене непромислове вирощення картоплі. 
+```{r cartopla, warning=FALSE,comment = NA, cache = F, echo=FALSE}
+gi <- ggplot(data=plot.data2[plot.data2$id!="м. Київ",]) + 
+  geom_polygon_interactive(aes(x = long, y = lat, group = group, fill = Картопля,
+      tooltip = tip, data_id = id, use_jquery = TRUE), color="grey50", size=0.25) + 
+  scale_fill_gradient(low="white", high = "#5b432c", 
+                      name="Картопля, тис. т", guide = guide_legend(reverse = TRUE), 
+                      na.value = "white") + 
+  theme_void() + labs(caption="Дані: Держстат") + theme(legend.title = element_text(size = 6), text = element_text(size=6))
+ggiraph(code = {print(gi)}, hover_css = "stroke-width:2px;", width = 1,height_svg = 3)
+```
+
+## Вирощення насіння соняшнику
+
+Урожай соняшнику в 2016 році був суттєво більшим, ніж у 2015-му. Загалом його було зібрано на 21,7% більше порівняно з позаминулим роком. Ріст у порівнянні з 2013 роком ще більший - цілих 23%. 
+Лідери  з вирощення соняшнику - Харківська, Дніпропетровська, Кіровоградська та Миколаївська області. Тут у 2016 році виросло майже 40% українського соняшнику.
+```{r soniashnyk, warning=FALSE,comment = NA, cache = F, echo=FALSE}
+gi <- ggplot(data=plot.data3[plot.data3$id!="м. Київ",]) + 
+  geom_polygon_interactive(aes(x = long, y = lat, group = group, fill = `Насіння соняшнику                       (у вазі після доробки)`,
+      tooltip = tip, data_id = id, use_jquery = TRUE), color="grey50", size=0.25) + 
+  scale_fill_gradient(low="white", high = "#004819", 
+                      name="Насіння \n соняшнику, тис. т", guide = guide_legend(reverse = TRUE), 
+                      na.value = "white") + 
+  theme_void() + labs(caption="Дані: Держстат") + theme(legend.title = element_text(size = 6), text = element_text(size=6))
+ggiraph(code = {print(gi)}, hover_css = "stroke-width:2px;", width = 1,height_svg = 3)
+```
+
+## Вирощення цукрових буряків
+
+Урожай цукрового буряку у 2016 році виріс порівняно з іншими культурами найбільше - на цілих 34.3%. Однак це не рекорд. У 2014 році його зібрали на 12% більше, ніж минулого року.
+Лідери тут знову традиційні - Вінницька та Полтавська області. Тут було зібрано 34% урожаю цукрового буряка 2016 року. 
+```{r buriak, warning=FALSE,comment = NA, cache = F, echo=FALSE}
+gi <- ggplot(data=plot.data4[plot.data4$id!="м. Київ",]) + 
+  geom_polygon_interactive(aes(x = long, y = lat, group = group, fill = `Цукрові буряки  (фабричні)`,
+      tooltip = tip, data_id = id, use_jquery = TRUE), color="grey50", size=0.25) + 
+  scale_fill_gradient(low="white", high = "#8c96c6", 
+                      name="Цукрові \n буряки, тис. т", guide = guide_legend(reverse = TRUE), 
+                      na.value = "white") + 
+  theme_void() + labs(caption="Дані: Держстат") + theme(legend.title = element_text(size = 6), text = element_text(size=6))
+ggiraph(code = {print(gi)}, hover_css = "stroke-width:2px;", width = 1,height_svg = 3)
+```
+
+Таким чином, аграрне лідерство в Україні має Вінницька область, яка є лідером з вирощення зернових культур, картоплі та цукрового буряка. При цьому вона має не останні показники з вирощення овочів та соняшникового насіння. Окремо можна відзначити Полтавську та Херсонську області. Перша є найбільшим виробником зернових культур, а друга є впевненим лідером у вирощенні овочевих.
